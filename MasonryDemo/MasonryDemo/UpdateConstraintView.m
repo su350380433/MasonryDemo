@@ -46,6 +46,7 @@
 //重新该更新约束的方法
 -(void)updateConstraints {
     [self.button mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.width.height.mas_equalTo(100);
         make.center.equalTo(self);
         make.size.mas_equalTo(self.buttonSize);
     }];

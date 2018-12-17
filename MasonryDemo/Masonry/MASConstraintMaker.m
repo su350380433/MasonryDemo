@@ -49,7 +49,7 @@
     //添加约束
     //self.constraints中存储的是通过Block中配置的参数
     NSArray *constraints = self.constraints.copy;
-    for (MASConstraint *constraint in constraints) {
+    for (MASConstraint *constraint in constraints) {//constraint 可能是MASCompositeConstraint 也可能是MASViewConstraint，
         constraint.updateExisting = self.updateExisting;        //updateExisting默认是NO
         [constraint install];                                   //install每个约束
     }
@@ -61,8 +61,10 @@
 
 //将constraints数组中的某些元素进行替换
 - (void)constraint:(MASConstraint *)constraint shouldBeReplacedWithConstraint:(MASConstraint *)replacementConstraint {
+    //之前是否存在
     NSUInteger index = [self.constraints indexOfObject:constraint];
     NSAssert(index != NSNotFound, @"Could not find constraint %@", constraint);
+    //之前存在的话，删除掉，  替换上新的集合，这个集合已经包含了被删除的元素
     [self.constraints replaceObjectAtIndex:index withObject:replacementConstraint];
 }
 
@@ -79,8 +81,9 @@
         NSArray *children = @[constraint, newConstraint];
         
         MASCompositeConstraint *compositeConstraint = [[MASCompositeConstraint alloc] initWithChildren:children];
-        compositeConstraint.delegate = self;
+        compositeConstraint.delegate = self;//设置混合约束的代理
         [self constraint:constraint shouldBeReplacedWithConstraint:compositeConstraint];
+        //返回的MASCompositeConstraint对象，链式调用。 下个链式调用走【MASCompositeConstraint.height】方法，再通过代理返回调用改方法
         return compositeConstraint;
     }
     
@@ -88,7 +91,7 @@
         newConstraint.delegate = self;              //设置代理-MASConstraintDelegate，为了MASViewConstraint也可以调用该方法
         [self.constraints addObject:newConstraint]; //添加进数组
     }
-    return newConstraint;
+    return newConstraint;//返回的MASViewConstraint对象，链式调用。 下个链式调用走【MASViewConstraint.height】方法，再通过代理返回调用改方法
 }
 
 - (MASConstraint *)addConstraintWithAttributes:(MASAttribute)attrs {

@@ -12,7 +12,7 @@
 @interface MASCompositeConstraint () <MASConstraintDelegate>
 
 @property (nonatomic, strong) id mas_key;
-@property (nonatomic, strong) NSMutableArray *childConstraints;
+@property (nonatomic, strong) NSMutableArray *childConstraints;//存储的是MASViewConstraint对象
 
 @end
 
@@ -78,7 +78,7 @@
 }
 
 #pragma mark - NSLayoutRelation proxy
-
+//这里再去遍历执行每个【MASConstraint  equalToWithRelation】 方法
 - (MASConstraint * (^)(id, NSLayoutRelation))equalToWithRelation {
     return ^id(id attr, NSLayoutRelation relation) {
         for (MASConstraint *constraint in self.childConstraints.copy) {
